@@ -5,9 +5,14 @@
 __pycache__
 db.sqlite3
 media
+/mouse_classifier_web/secrets.py
 
 
 # React #
+
+# ssl certs
+/frontend_react/server.crt
+/frontend_react/server.key
 
 # dependencies
 /frontend_react/node_modules
