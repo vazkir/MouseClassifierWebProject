@@ -1,0 +1,4 @@
+{% load static %}
+{% for file in css_files %}
+  <link href="{% static file %}" rel="stylesheet">
+{% endfor %}

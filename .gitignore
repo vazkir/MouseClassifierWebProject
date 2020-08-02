@@ -1,0 +1,32 @@
+# Django #
+*.log
+*.pot
+*.pyc
+__pycache__
+db.sqlite3
+media
+
+
+# React #
+
+# dependencies
+/frontend_react/node_modules
+/frontend_react/*.pnp
+/frontend_react/*.pnp.js
+
+# testing
+/frontend_react/coverage
+
+# production
+/frontend_react/build
+
+# misc
+/frontend_react.DS_Store
+/frontend_react.env.local
+/frontend_react.env.development.local
+/frontend_react.env.test.local
+/frontend_react.env.production.local
+
+/frontend_reactnpm-debug.log*
+/frontend_reactyarn-debug.log*
+/frontend_reactyarn-error.log*

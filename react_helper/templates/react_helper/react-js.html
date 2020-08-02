@@ -1,0 +1,10 @@
+{% if is_live %}
+  {% for file in js_files %}
+    <script type="text/javascript" src="{{ file }}"></script>
+  {% endfor %}
+{% else %}
+  {% load static %}
+  {% for file in js_files %}
+    <script type="text/javascript" src="{% static file %}"></script>
+  {% endfor %}
+{% endif %}
