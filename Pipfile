@@ -10,6 +10,8 @@ django = "*"
 uvicorn = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
+pandas = "*"
+starlette = "*"
 
 [requires]
 python_version = "3.7"

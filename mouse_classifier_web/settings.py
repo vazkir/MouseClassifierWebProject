@@ -1,5 +1,5 @@
 import os
-from secrets import *
+from mouse_classifier_web.secret_settings import *
 
 # Django 3 async withouth depencies from: https://dev.to/jaydenwindle/adding-websockets-to-your-django-app-with-no-extra-dependencies-2f6h
 
@@ -19,6 +19,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'sslserver',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

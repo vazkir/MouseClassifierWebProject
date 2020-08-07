@@ -1,10 +1,13 @@
-
+import json, time
+import pandas as pd
 
 
 # This will handle Websocket requests until the connection is closed
 # Here we'll wait for any new events that the server receives from the client
 # Then we'll act on the contents of the event, and send the response to the client
 async def websocket_applciation(scope, receive, send):
+    raw_data = []
+
     while True:
         event = await receive()
 
@@ -20,10 +23,40 @@ async def websocket_applciation(scope, receive, send):
 
         # This is how we receive and event from the client,
         if event['type'] == 'websocket.receive':
-            if event['text'] == 'ping':
+            event_data = json.loads(event['text'])
+            print(event_data)
 
-                # Send response back to the client
+            if event_data['last_one'] == True:
+                # Convert to pandas dataframe
+                df = pd.DataFrame(raw_data, columns=['HostTimestamp', 'X_mGa', 'Y_mGa', 'Z_mGa', 'X_dps', 'Y_dps', 'Z_dps'])
+                print(f"Data retrieval done with {len(df)} data entries")
+
+                # Clear empty rows and raw_data for next call
+                clean_df = df.dropna()
+                raw_data = []
+
+                # TODO: Call ML
+                time.sleep(1.5)
+
+                # Send results back to the client
                 await send({
                     'type': 'websocket.send',
-                    'text': 'pong!'
+                    'text': json.dumps({
+                        'movement':'up',
+                        'accuracy':0.57
+                    }),
                 })
+
+            elif event_data['is_message'] == False:
+                sd = event_data['data'] # Grab single data points
+
+                # See for why not df directly: https://stackoverflow.com/a/62734983/8970591
+                raw_data.append([
+                    int(time.time()),
+                    sd['x_acc'],
+                    sd['y_acc'],
+                    sd['z_acc'],
+                    sd['x_gyr'],
+                    sd['y_gyr'],
+                    sd['z_gyr'],
+                ])
