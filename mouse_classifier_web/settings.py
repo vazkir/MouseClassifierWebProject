@@ -1,5 +1,7 @@
 import os
 from mouse_classifier_web.secret_settings import *
+import mimetypes
+mimetypes.add_type("text/css", ".css", True)
 
 # Django 3 async withouth depencies from: https://dev.to/jaydenwindle/adding-websockets-to-your-django-app-with-no-extra-dependencies-2f6h
 
@@ -27,12 +29,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'react_helper', # Needs to be before staticfiles
     'django.contrib.staticfiles',
-    'corsheaders',            #  React communication
+    # 'corsheaders',            #  React communication
     'backend'
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', #  React communication
+    # 'corsheaders.middleware.CorsMiddleware', #  React communication -> Doesn't work well with asgiu and only needed for API calls
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

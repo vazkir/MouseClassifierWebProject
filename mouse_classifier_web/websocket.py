@@ -1,5 +1,6 @@
 import json, time
 import pandas as pd
+from mouse_classifier_web.ml_classifier import run_ml_model
 
 
 # This will handle Websocket requests until the connection is closed
@@ -35,15 +36,15 @@ async def websocket_applciation(scope, receive, send):
                 clean_df = df.dropna()
                 raw_data = []
 
-                # TODO: Call ML
-                time.sleep(1.5)
+                # Call ML
+                movement, accuracy = ("Up", 0.57)
 
                 # Send results back to the client
                 await send({
                     'type': 'websocket.send',
                     'text': json.dumps({
-                        'movement':'up',
-                        'accuracy':0.57
+                        'movement':movement,
+                        'accuracy':accuracy
                     }),
                 })
 

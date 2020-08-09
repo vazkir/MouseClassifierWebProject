@@ -4,28 +4,13 @@
 {% load static %}
 {% csrf_token %}
 
-<!-- <div class="container"> -->
-<div class="container">
-  <div id="react" style="position: absolute; top: 70px; left: 0; width: 100%; height: 100%;"></div>
-  <script>
+{% get_react_static_css %}
+<div id="react" style="position: absolute; top: 70px; left: 0; width: 100%; height: 100%;"></div>
+<script>
     window.component = '{{ component }}';
     window.props = {{ props | safe }};
-  </script>
-  {% get_react_static_js %}
+</script>
+{% get_react_static_js %}
 
-</div>
 
-{% endblock %}
-
-<!-- Js block -->
-{% block scripts %}
-<!-- block.super will get the content of the block from the parent template -->
-{{ block.super }}
-<!-- DOESNT WORK, maybe because I am not using it??? -->
-<!-- Extra js to handle the rewriting process -->
-<!-- <script src="{% static 'js/rewriter.js' %}"></script> -->
-<!-- <script type="text/javascript" src="http://localhost:3000/static/js/bundle.js"></script>
-<script type="text/javascript" src="http://localhost:3000/static/js/0.chunk.js"></script>
-<script type="text/javascript" src="http://localhost:3000/static/js/1.chunk.js"></script>
-<script type="text/javascript" src="http://localhost:3000/static/js/main.chunk.js"></script> -->
 {% endblock %}

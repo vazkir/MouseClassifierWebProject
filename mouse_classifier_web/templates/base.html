@@ -1,51 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-{% load static %}
-{% load react_helper_tags %}
-
 {% include "head.html" %}
 
-
-<!-- BEGIN: Body-->
-
-<body class="vertical-layout vertical-menu 2-columns   fixed-navbar" data-open="click" data-menu="vertical-menu" data-col="2-columns">
-  <!-- BEGIN: Header-->
-  <nav class="header-navbar navbar-expand-md navbar navbar-with-menu fixed-top navbar-dark navbar-shadow">
-    <div class="navbar-wrapper">
-      <div class="navbar-header">
-        <ul class="nav navbar-nav flex-row">
-          <li class="nav-item mobile-menu d-md-none mr-auto"><a class="nav-link nav-menu-main menu-toggle hidden-xs" href="#"><i class="ft-menu font-large-1"></i></a></li>
-          <li class="nav-item"><a class="navbar-brand" href="{% url 'main_react_app' %}"><img class="brand-logo" alt="stack admin logo" src="{% static 'stack_admin/app-assets/images/logo/stack-logo-light.png' %}">
-              <h2 class="brand-text">Stack</h2>
-            </a></li>
-          <li class="nav-item d-md-none"><a class="nav-link open-navbar-container" data-toggle="collapse" data-target="#navbar-mobile"><i class="fa fa-ellipsis-v"></i></a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-  <!-- END: Header-->
-
-  {% include "sidebar.html" %}
-
-
-  <div class="app-content content">
-    <div class="content-wrapper">
-      {% block content %}
-      {% endblock %}
-    </div>
-  </div>
-
-  <!-- BEGIN FOOTER -->
-  <footer class="footer footer-static footer-light navbar-border">
-    <p class="clearfix blue-grey lighten-2 text-sm-center mb-0 px-2"><span class="float-md-left d-block d-md-inline-block">Copyright © 2020 <a class="text-bold-800 grey darken-2" href="#" target="_blank">A&W Development</a></span><span
-        class="float-md-right d-none d-lg-block">Hand-crafted &amp; Made with <i class="ft-heart pink"></i></span></p>
-  </footer>
-  <!-- END: Footer-->
-
-  {% include "js_scripts.html" %}
-  <script src="{% static 'js/generate_scrapy_script.js' %}?v=0.0.4"></script>
-
-
+</body>
+{% block content %}
+{% endblock %}
 </body>
 
 </html>

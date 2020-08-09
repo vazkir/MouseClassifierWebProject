@@ -5,7 +5,7 @@ import {
   // Magnetometer,
   Accelerometer
 } from 'motion-sensors-polyfill/src/motion-sensors.js';
-
+import ProgressBar from './progress/ProgressBar';
 
 // Requesting permission: https://dev.to/li/how-to-requestpermission-for-devicemotion-and-deviceorientation-events-in-ios-13-46g2
 // Npm motion sensor: https://developer.aliyun.com/mirror/npm/package/motion-sensors-polyfill#how-to-use-the-polyfill
@@ -16,7 +16,6 @@ class MouseClassifier extends Component {
     constructor(props) {
       super(props);
       // User variable from django if applicable
-      console.log("INIT MouseClassifier");
       this.state = {
           isTracking: false,
           listnersAdded: false,
@@ -30,7 +29,14 @@ class MouseClassifier extends Component {
           dataPeriod: 50,
           msInterval: 0,
           currentData:{ x_acc:0, y_acc:0, z_acc:0, x_gyr:0, y_gyr:0, z_gyr:0 },
-          interval: {}
+          interval: {},
+          resultAccuracy: 0.0,
+          resultMovement: "",
+          resultColor:'#d9edfe',
+          colorDefault: '#d9edfe',
+          colorGood: '#4FFF33',
+          colorMedium: '#F6D645',
+          colorBad:'#F06925',
       };
     }
 
@@ -66,29 +72,37 @@ class MouseClassifier extends Component {
         // Send closing message
         this.sendDataUpstream({}, true);
 
-        // Stop tracking
+        // Stop tracking and notify use
+        this.setState({resultMovement: "Waiting for results..."});
         this.stopTrackingSensors();
 
         // Reset Data
         const cleanData = {x_acc:0, y_acc:0, z_acc:0, x_gyr:0, y_gyr:0, z_gyr:0};
         this.setState({...this.state, currentData: cleanData});
-        this.setState({ msInterval: 0, isTracking: false}); // Needs to be a seperate call
+        this.setState({ msInterval: 0}); // Needs to be a seperate call
     }
 
     setupWebSocket(){
         var socketPath = 'wss://localhost:8000/';
         const webSocket = new WebSocket(socketPath);
 
-        this.setState({
-            webSocket:webSocket
-        });
+        this.setState({ webSocket:webSocket });
 
+        // Received downstream websocket message
         webSocket.onmessage = (e) => {
             var data = JSON.parse(e.data);
             console.log(data);
+            const accuracyPerc = +(data.accuracy * 100).toFixed(0);
+            const resultColor = accuracyPerc > 70 ? this.state.colorGood : this.state.colorMedium;
+            if (accuracyPerc < 50) { resultColor = this.state.colorBad; }
 
-            // Display the movement and accuracy
-            // And unlock button again
+            // Display the movement and accuracy and unlock button again
+            this.setState({
+                resultAccuracy: accuracyPerc,
+                resultMovement: data.movement,
+                resultColor: resultColor,
+                isTracking: false
+            })
         };
 
         webSocket.onclose = (e) => {
@@ -140,17 +154,42 @@ class MouseClassifier extends Component {
 
 
     async startTracking(){
+        // Clear previous data
+        this.setState({
+            resultAccuracy: 0,
+            resultMovement: "",
+            resultColor: this.state.colorDefault,
+            isTracking: true
+        });
+
+
         this.sendDataUpstream({ message:"Tracking starts.." }, false, true);
         if (!this.state.deviceMotionPermission || !this.state.deviceOrientationPermission){
             await this.requestDeviceMotionPermission();
             await this.requestDeviceOrientationPermission();
         }
-        this.startMovement();
-        this.startDataInterval();
+
+        this.startCountDown();
+    }
+
+    startCountDown = () => {
+        var timeleft = 4;
+        var downloadTimer = setInterval(function(){
+            timeleft--;
+            const timeMessage =  `Tracking starts in: ${timeleft}`;
+            this.setState({resultMovement: timeMessage});
+            if(timeleft <= 0){
+                clearInterval(downloadTimer);
+                this.startMovement();
+                this.startDataInterval();
+            }
+        }.bind(this), 1000);
     }
 
     // Button tappped
     startMovement = () => {
+        this.setState({resultMovement: "Tracking...."});
+
         // The .stop method doesn't work so adding and removing listners
         // if (!this.state.listnersAdded){
         this.state.gyrSensor.addEventListener('reading', this.readGyr);
@@ -162,7 +201,6 @@ class MouseClassifier extends Component {
         this.state.gyrSensor.start();
         this.state.accSensor.start();
 
-        this.setState({ isTracking: true });
     };
 
     readGyr = (e) =>{
@@ -195,14 +233,28 @@ class MouseClassifier extends Component {
     }
 
     render() {
-        const buttonTitle = !this.state.isTracking ? "Start" : "Stop";
+        const buttonTitle = !this.state.isTracking ? "Start" : "Disabled";
 
         return (
+            <div>
             <div className="mb-2 center">
-            <Button variant="success" size="lg"  style={{ width: '28rem', height:'6rem' }}
-            onClick={!this.state.isTracking ? this.startTracking : this.stopAll}>
+            <ProgressBar
+              progress={this.state.resultAccuracy}
+              size={200}
+              strokeWidth={15}
+              circleOneStroke={this.state.colorDefault}
+              circleTwoStroke={this.state.resultColor}
+            />
+            <h3>{this.state.resultMovement}</h3>
+            <br/>
+            <Button disabled={this.state.isTracking}
+                variant="success"
+                size="lg"
+                style={{ width: '28rem', height:'6rem' }}
+                onClick={!this.state.isTracking ? this.startTracking : this.stopAll}>
                 {buttonTitle}
             </Button>
+            </div>
             <p id="statusGyr">Gyroscope Waiting...</p>
             <p id="statusAcc">Accelerometer Waiting...</p>
             <p id="intervalSeconds">0....</p>

@@ -9,6 +9,7 @@ media
 
 
 # React #
+/frontend_react
 
 # ssl certs
 /frontend_react/server.crt

@@ -16,7 +16,7 @@ if hasattr(settings, 'REACT_HOST'):
     _host = settings.REACT_HOST
 
 # The URL the create-react-app liveserver is accessible at
-REACT_LIVE_URL = 'http://{}:{}'.format(_host, _port)
+REACT_LIVE_URL = 'https://{}:{}'.format(_host, _port)
 
 if hasattr(settings, 'REACT_APPNAME'):
     REACT_APPNAME = settings.REACT_APPNAME
