@@ -1,7 +1,5 @@
 import os
-from mouse_classifier_web.secret_settings import *
-import mimetypes
-mimetypes.add_type("text/css", ".css", True)
+
 
 # Django 3 async withouth depencies from: https://dev.to/jaydenwindle/adding-websockets-to-your-django-app-with-no-extra-dependencies-2f6h
 
