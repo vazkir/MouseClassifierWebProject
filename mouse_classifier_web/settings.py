@@ -1,4 +1,13 @@
 import os
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
+try:
+    from .secret_settings import *
+except ImportError:
+    pass
 
 
 # Django 3 async withouth depencies from: https://dev.to/jaydenwindle/adding-websockets-to-your-django-app-with-no-extra-dependencies-2f6h
@@ -123,13 +132,3 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static') # e.g.: example.com/static/
-
-try:
-    from .local_settings import *
-except ImportError:
-    pass
-
-try:
-    from .secret_settings import *
-except ImportError:
-    pass
