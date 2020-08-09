@@ -111,11 +111,13 @@ class MouseClassifier extends Component {
     }
 
     sendDataUpstream = (data, isLast, isMessage = false) => {
-        this.state.webSocket.send(JSON.stringify({
-            'last_one': isLast,
-            'is_message':isMessage,
-            'data': data
-        }));
+        this.state.webSocket.onopen = function(e) {
+            this.state.webSocket.send(JSON.stringify({
+                'last_one': isLast,
+                'is_message':isMessage,
+                'data': data
+            }));
+        }
     }
 
    async requestDeviceMotionPermission() {
