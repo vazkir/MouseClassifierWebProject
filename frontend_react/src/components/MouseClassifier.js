@@ -118,18 +118,19 @@ class MouseClassifier extends Component {
         };
 
         webSocket.onclose = (e) => {
+            console.error('Chat socket closed unexpectedly');
             console.error(e);
         };
     }
 
     sendDataUpstream = (data, isLast, isMessage = false) => {
-        // this.state.webSocket.onopen = function(e) {
+        this.state.webSocket.onopen = function(e) {
             this.state.webSocket.send(JSON.stringify({
                 'last_one': isLast,
                 'is_message':isMessage,
                 'data': data
             }));
-        // }
+        }
     }
 
    async requestDeviceMotionPermission() {
