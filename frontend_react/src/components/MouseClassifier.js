@@ -95,7 +95,7 @@ class MouseClassifier extends Component {
     }
 
     setupWebSocket(){
-        var socketPath = 'wss://mcwp.vsc.app:8000/';
+        var socketPath = 'ws://mcwp.vsc.app:8000/';
         const webSocket = new WebSocket(socketPath);
 
         this.setState({ webSocket:webSocket });
