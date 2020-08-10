@@ -222,13 +222,14 @@ class MouseClassifier extends Component {
     };
 
     readGyr = (e) =>{
+
         this.setState({...this.state.currentData,
             x_gyr: +(e.target.x).toFixed(2),
             y_gyr: +(e.target.y).toFixed(2),
             z_gyr: +(e.target.z).toFixed(2),
         });
-
-        document.getElementById('statusGyr').innerHTML = `x: ${this.state.currentData.x_gyr}, y: ${+(this.state.currentData.y_gyr)}, z: ${this.state.currentData.z_gyr}`;
+        console.log()
+        document.getElementById('statusGyr').innerHTML = `x: ${+(e.target.x).toFixed(2)}, y: ${+(e.target.y).toFixed(2)}, z: ${+(e.target.z).toFixed(2)}`;
     }
 
     readAcc = (e) =>{
@@ -238,7 +239,7 @@ class MouseClassifier extends Component {
             z_acc: +(e.target.z).toFixed(2),
         });
 
-        document.getElementById('statusAcc').innerHTML = `x: ${this.state.currentData.x_acc}, y: ${this.state.currentData.y_acc}, z: ${this.state.currentData.z_acc}`;
+        document.getElementById('statusAcc').innerHTML = `x: ${+(e.target.x).toFixed(2)}, y: ${+(e.target.y).toFixed(2)}, z: ${+(e.target.z).toFixed(2)}`;
     }
 
     stopTrackingSensors = () => {
@@ -254,7 +255,7 @@ class MouseClassifier extends Component {
         const buttonTitle = !this.state.isTracking ? "Start" : "Disabled";
 
         return (
-            <div>
+            <div className="dark-vazkir">
             <div className="mb-2 center">
             <ProgressBar
               progress={this.state.resultAccuracy}

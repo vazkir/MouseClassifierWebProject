@@ -5,7 +5,7 @@
 {% csrf_token %}
 
 {% get_react_static_css %}
-<div id="react" style="position: absolute; top: 70px; left: 0; width: 100%; height: 100%;"></div>
+<div id="react" style="position: background-color: #35383a; absolute; top: 70px; left: 0; width: 100%; height: 100%;"></div>
 <script>
     window.component = '{{ component }}';
     window.props = {{ props | safe }};

@@ -15,7 +15,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
+      <div className="App dark-vazkir">
         <MouseClassifier/>
       </div>
     );
