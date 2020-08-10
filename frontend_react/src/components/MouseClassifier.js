@@ -6,6 +6,10 @@ import {
   Accelerometer
 } from 'motion-sensors-polyfill/src/motion-sensors.js';
 import ProgressBar from './progress/ProgressBar';
+import {
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 
 // Requesting permission: https://dev.to/li/how-to-requestpermission-for-devicemotion-and-deviceorientation-events-in-ios-13-46g2
 // Npm motion sensor: https://developer.aliyun.com/mirror/npm/package/motion-sensors-polyfill#how-to-use-the-polyfill
@@ -43,6 +47,14 @@ class MouseClassifier extends Component {
     componentDidMount(){
         this.setupWebSocket();
         this.startTracking = this.startTracking.bind(this);
+
+        if (isBrowser){ this.notMobileAlert(); }
+    }
+
+    notMobileAlert = () => {
+        setTimeout(function (){
+            alert("This web can only be used on mobile, since it needs access to the gyroscope and accelator..")
+        }, 1000);
     }
 
     // https://upmostly.com/tutorials/setinterval-in-react-components-using-hooks
@@ -54,7 +66,7 @@ class MouseClassifier extends Component {
     handleDataTransmission = () => {
         const msInterval = this.state.msInterval + this.state.dataPeriod;
         this.setState({msInterval: msInterval});
-        document.getElementById('intervalSeconds').innerHTML = msInterval;
+        document.getElementById('intervalSeconds').innerHTML = msInterval + 'ms';
         console.log(msInterval);
         if (msInterval < 2000){
             // send socket data
@@ -156,22 +168,26 @@ class MouseClassifier extends Component {
 
 
     async startTracking(){
-        // Clear previous data
-        this.setState({
-            resultAccuracy: 0,
-            resultMovement: "",
-            resultColor: this.state.colorDefault,
-            isTracking: true
-        });
+        if (isBrowser){
+            this.notMobileAlert();
+        }else{
+            // Clear previous data
+            this.setState({
+                resultAccuracy: 0,
+                resultMovement: "",
+                resultColor: this.state.colorDefault,
+                isTracking: true
+            });
 
 
-        this.sendDataUpstream({ message:"Tracking starts.." }, false, true);
-        if (!this.state.deviceMotionPermission || !this.state.deviceOrientationPermission){
-            await this.requestDeviceMotionPermission();
-            await this.requestDeviceOrientationPermission();
+            this.sendDataUpstream({ message:"Tracking starts.." }, false, true);
+            if (!this.state.deviceMotionPermission || !this.state.deviceOrientationPermission){
+                await this.requestDeviceMotionPermission();
+                await this.requestDeviceOrientationPermission();
+            }
+
+            this.startCountDown();
         }
-
-        this.startCountDown();
     }
 
     startCountDown = () => {
@@ -207,22 +223,22 @@ class MouseClassifier extends Component {
 
     readGyr = (e) =>{
         this.setState({...this.state.currentData,
-            x_gyr: e.target.x,
-            y_gyr: e.target.x,
-            z_gyr: e.target.x,
+            x_gyr: +(e.target.x).toFixed(2),
+            y_gyr: +(e.target.y).toFixed(2),
+            z_gyr: +(e.target.z).toFixed(2),
         });
 
-        document.getElementById('statusGyr').innerHTML = 'x: ' + e.target.x + ' y: ' + e.target.y + ' z: ' + e.target.z;
+        document.getElementById('statusGyr').innerHTML = `x: ${this.state.currentData.x_gyr}, y: ${+(this.state.currentData.y_gyr)}, z: ${this.state.currentData.z_gyr}`;
     }
 
     readAcc = (e) =>{
         this.setState({...this.state.currentData,
-            x_acc: e.target.x,
-            y_acc: e.target.x,
-            z_acc: e.target.x,
+            x_acc: +(e.target.x).toFixed(2),
+            y_acc: +(e.target.y).toFixed(2),
+            z_acc: +(e.target.z).toFixed(2),
         });
 
-        document.getElementById('statusAcc').innerHTML = 'x: ' + e.target.x + ' y: ' + e.target.y + ' z: ' + e.target.z;
+        document.getElementById('statusAcc').innerHTML = `x: ${this.state.currentData.x_acc}, y: ${this.state.currentData.y_acc}, z: ${this.state.currentData.z_acc}`;
     }
 
     stopTrackingSensors = () => {
@@ -257,9 +273,9 @@ class MouseClassifier extends Component {
                 {buttonTitle}
             </Button>
             </div>
-            <p id="statusGyr">Gyroscope Waiting...</p>
-            <p id="statusAcc">Accelerometer Waiting...</p>
-            <p id="intervalSeconds">0....</p>
+            <p id="statusGyr">Gyroscope waiting...</p>
+            <p id="statusAcc">Accelerometer waiting...</p>
+            <p id="intervalSeconds">0ms</p>
             </div>
         );
     }
