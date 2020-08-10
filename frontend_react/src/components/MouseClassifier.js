@@ -118,7 +118,7 @@ class MouseClassifier extends Component {
         };
 
         webSocket.onclose = (e) => {
-            console.error('Chat socket closed unexpectedly');
+            console.error(e);
         };
     }
 
