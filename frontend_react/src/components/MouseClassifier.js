@@ -123,13 +123,13 @@ class MouseClassifier extends Component {
     }
 
     sendDataUpstream = (data, isLast, isMessage = false) => {
-        this.state.webSocket.onopen = function(e) {
+        // this.state.webSocket.onopen = function(e) {
             this.state.webSocket.send(JSON.stringify({
                 'last_one': isLast,
                 'is_message':isMessage,
                 'data': data
             }));
-        }
+        // }
     }
 
    async requestDeviceMotionPermission() {
@@ -168,9 +168,9 @@ class MouseClassifier extends Component {
 
 
     async startTracking(){
-        if (isBrowser){
-            this.notMobileAlert();
-        }else{
+        // if (isBrowser){
+        //     this.notMobileAlert();
+        // }else{
             // Clear previous data
             this.setState({
                 resultAccuracy: 0,
@@ -187,7 +187,7 @@ class MouseClassifier extends Component {
             }
 
             this.startCountDown();
-        }
+        // }
     }
 
     startCountDown = () => {

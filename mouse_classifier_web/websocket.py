@@ -37,7 +37,7 @@ async def websocket_applciation(scope, receive, send):
                 raw_data = []
 
                 # Call ML
-                movement, accuracy = ("Up", 0.57)
+                movement, accuracy = await run_ml_model(df)
 
                 # Send results back to the client
                 await send({
