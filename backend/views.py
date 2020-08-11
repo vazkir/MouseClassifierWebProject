@@ -16,11 +16,13 @@ from django.conf import settings
 
 
 def mainReactApp(request):
+    print(f"PRODUCTION -> {settings.IS_PRODUCTION}")
     # Info to pass down to request which passes it to React
     context = {
         'component': 'reactComponent',
         'props': {
             'ref': 'reactVS',
+            'is_production': settings.IS_PRODUCTION,
             'returnUrl': request.build_absolute_uri(), # The url from which the reques
         },
     }

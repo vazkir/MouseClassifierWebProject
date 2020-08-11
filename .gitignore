@@ -5,7 +5,7 @@
 __pycache__
 db.sqlite3
 media
-/mouse_classifier_web/secret_settings.py
+/mouse_classifier_web/development_settings.py
 
 
 # React #

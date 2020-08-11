@@ -29,8 +29,13 @@ async def websocket_applciation(scope, receive, send):
 
             if event_data['last_one'] == True:
                 # Convert to pandas dataframe
-                df = pd.DataFrame(raw_data, columns=['HostTimestamp', 'X_mGa', 'Y_mGa', 'Z_mGa', 'X_dps', 'Y_dps', 'Z_dps'])
+                df = pd.DataFrame(raw_data, columns=['sr_no', 'HostTimestamp', 'NodeTimestamp', 'X_mg', 'Y_mg', 'Z_mg', 'X_dps', 'Y_dps', 'Z_dps'])
+                # Clear empty rows
+                df = df.dropna()
+
                 print(f"Data retrieval done with {len(df)} data entries")
+                # print(df.head())
+                # print(list(df.columns))
 
                 # Clear empty rows and raw_data for next call
                 clean_df = df.dropna()
@@ -52,12 +57,15 @@ async def websocket_applciation(scope, receive, send):
                 sd = event_data['data'] # Grab single data points
 
                 # See for why not df directly: https://stackoverflow.com/a/62734983/8970591
+                # Items need to be floats
                 raw_data.append([
-                    int(time.time()),
-                    sd['x_acc'],
-                    sd['y_acc'],
-                    sd['z_acc'],
-                    sd['x_gyr'],
-                    sd['y_gyr'],
-                    sd['z_gyr'],
+                    sd['sr_no'],
+                    sd['hostTime'],
+                    float("%.1f" % sd['nodeTime']),
+                    float(sd['x_acc']),
+                    float(sd['y_acc']),
+                    float(sd['z_acc']),
+                    float(sd['x_gyr']),
+                    float(sd['y_gyr']),
+                    float(sd['z_gyr']),
                 ])

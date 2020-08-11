@@ -13,6 +13,10 @@ django-cors-headers = "*"
 pandas = "*"
 starlette = "*"
 whitenoise = "*"
+joblib = "*"
+xgboost = "*"
+sklearn = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.7"

@@ -130,6 +130,6 @@ except ImportError:
     pass
 
 try:
-    from .secret_settings import *
+    from .development_settings import *
 except ImportError:
     pass

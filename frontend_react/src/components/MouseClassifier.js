@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 import {
   Gyroscope,
-  // Magnetometer,
   Accelerometer
 } from 'motion-sensors-polyfill/src/motion-sensors.js';
 import ProgressBar from './progress/ProgressBar';
-import {
-  isBrowser,
-  isMobile
-} from "react-device-detect";
+import { isMobile } from "react-device-detect";
 
 // Requesting permission: https://dev.to/li/how-to-requestpermission-for-devicemotion-and-deviceorientation-events-in-ios-13-46g2
 // Npm motion sensor: https://developer.aliyun.com/mirror/npm/package/motion-sensors-polyfill#how-to-use-the-polyfill
@@ -32,6 +29,9 @@ class MouseClassifier extends Component {
           messages: [],
           dataPeriod: 50,
           msInterval: 0,
+          sr_no: 0,
+          hostTime: 156162,
+          nodeTime: 29922.0,
           currentData:{ x_acc:0, y_acc:0, z_acc:0, x_gyr:0, y_gyr:0, z_gyr:0 },
           interval: {},
           resultAccuracy: 0.0,
@@ -39,7 +39,7 @@ class MouseClassifier extends Component {
           resultColor:'#d9edfe',
           colorDefault: '#d9edfe',
           colorGood: '#4FFF33',
-          colorMedium: '#F6D645',
+          colorMedium: '#A2E766',
           colorBad:'#F06925',
       };
     }
@@ -48,7 +48,7 @@ class MouseClassifier extends Component {
         this.setupWebSocket();
         this.startTracking = this.startTracking.bind(this);
 
-        if (isBrowser){ this.notMobileAlert(); }
+        if (!isMobile){ this.notMobileAlert(); }
     }
 
     notMobileAlert = () => {
@@ -64,13 +64,32 @@ class MouseClassifier extends Component {
     }
 
     handleDataTransmission = () => {
+        const new_sr_no = this.state.sr_no + 1;
         const msInterval = this.state.msInterval + this.state.dataPeriod;
-        this.setState({msInterval: msInterval});
+        // 156222 -> 156282
+        const newHostTime = this.state.hostTime + this.state.dataPeriod;
+
+        // 29922.0 -> 29928.0
+        const newNodeTime = this.state.nodeTime + (this.state.dataPeriod/10);
+
+        this.setState({
+            msInterval: msInterval,
+            sr_no: new_sr_no,
+            hostTime: newHostTime,
+            nodeTime: newNodeTime
+        });
+
         document.getElementById('intervalSeconds').innerHTML = msInterval + 'ms';
         console.log(msInterval);
         if (msInterval < 2000){
             // send socket data
-            this.sendDataUpstream(this.state.currentData, false);
+            var newData = this.state.currentData;
+            newData.sr_no = new_sr_no;
+            newData.msInterval = msInterval;
+            newData.hostTime = newHostTime;
+            newData.nodeTime = newNodeTime;
+
+            this.sendDataUpstream(newData, false);
         }else{
             // Stop all handlers, trackers etc.
             this.stopAll();
@@ -91,11 +110,13 @@ class MouseClassifier extends Component {
         // Reset Data
         const cleanData = {x_acc:0, y_acc:0, z_acc:0, x_gyr:0, y_gyr:0, z_gyr:0};
         this.setState({...this.state, currentData: cleanData});
-        this.setState({ msInterval: 0}); // Needs to be a seperate call
+        this.setState({ msInterval: 0, sr_no: 0, hostTime: 156162, nodeTime: 29922.0,}); // Needs to be a seperate call
     }
 
     setupWebSocket(){
-        var socketPath = 'wss://mcwp.vsc.app/:8000/';
+        const domain = this.props.is_production ? '64.225.74.24/' : 'localhost';
+        var socketPath = `wss://${domain}:8000/`;
+
         const webSocket = new WebSocket(socketPath);
 
         this.setState({ webSocket:webSocket });
@@ -105,7 +126,7 @@ class MouseClassifier extends Component {
             var data = JSON.parse(e.data);
             console.log(data);
             const accuracyPerc = +(data.accuracy * 100).toFixed(0);
-            const resultColor = accuracyPerc > 70 ? this.state.colorGood : this.state.colorMedium;
+            var resultColor = accuracyPerc > 70 ? this.state.colorGood : this.state.colorMedium;
             if (accuracyPerc < 50) { resultColor = this.state.colorBad; }
 
             // Display the movement and accuracy and unlock button again
@@ -169,9 +190,9 @@ class MouseClassifier extends Component {
 
 
     async startTracking(){
-        // if (isBrowser){
-        //     this.notMobileAlert();
-        // }else{
+        if (!isMobile){
+            this.notMobileAlert();
+        }else{
             // Clear previous data
             this.setState({
                 resultAccuracy: 0,
@@ -188,7 +209,7 @@ class MouseClassifier extends Component {
             }
 
             this.startCountDown();
-        // }
+        }
     }
 
     startCountDown = () => {
@@ -257,30 +278,33 @@ class MouseClassifier extends Component {
 
         return (
             <div className="dark-vazkir">
-            <div className="mb-2 center">
-            <ProgressBar
-              progress={this.state.resultAccuracy}
-              size={200}
-              strokeWidth={15}
-              circleOneStroke={this.state.colorDefault}
-              circleTwoStroke={this.state.resultColor}
-            />
-            <h3>{this.state.resultMovement}</h3>
-            <br/>
-            <Button disabled={this.state.isTracking}
-                variant="success"
-                size="lg"
-                style={{ width: '28rem', height:'6rem' }}
-                onClick={!this.state.isTracking ? this.startTracking : this.stopAll}>
-                {buttonTitle}
-            </Button>
-            </div>
-            <p id="statusGyr">Gyroscope waiting...</p>
-            <p id="statusAcc">Accelerometer waiting...</p>
-            <p id="intervalSeconds">0ms</p>
+                <p id="statusGyr">Gyroscope waiting...</p>
+                <p id="statusAcc">Accelerometer waiting...</p>
+                <p id="intervalSeconds">0ms</p>
+                <div className="mb-2 center">
+                    <ProgressBar
+                      progress={this.state.resultAccuracy}
+                      size={250}
+                      strokeWidth={15}
+                      circleOneStroke={this.state.colorDefault}
+                      circleTwoStroke={this.state.resultColor}
+                    />
+                    <h3>{this.state.resultMovement}</h3>
+                    <br/>
+                    <Button disabled={this.state.isTracking}
+                        variant="success"
+                        size="lg"
+                        style={{ width: '15rem', height:'3.5rem' }}
+                        onClick={!this.state.isTracking ? this.startTracking : this.stopAll}>
+                        {buttonTitle}
+                    </Button>
+                </div>
             </div>
         );
     }
 }
 
+MouseClassifier.propTypes = {
+    is_production: PropTypes.bool.isRequired,
+}
 export default MouseClassifier;

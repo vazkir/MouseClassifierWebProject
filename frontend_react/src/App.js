@@ -8,18 +8,19 @@ import MouseClassifier from './components/MouseClassifier'
 // State in parent component & explantion 2 editor: https://stackoverflow.com/questions/43001280/accessing-draftjs-output-from-parent
 class App extends Component {
 
-  constructor(props) {
-    super(props);
-    // User variable from django if applicable
-  }
-
   render() {
     return (
       <div className="App dark-vazkir">
-        <MouseClassifier/>
+        <MouseClassifier
+        is_production={this.props.is_production}
+        />
       </div>
     );
   }
+}
+
+App.propTypes = {
+    is_production: PropTypes.bool.isRequired,
 }
 
 export default App;
