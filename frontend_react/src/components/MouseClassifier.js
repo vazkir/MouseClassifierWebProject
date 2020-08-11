@@ -115,7 +115,7 @@ class MouseClassifier extends Component {
 
     setupWebSocket(){
         const domain = this.props.is_production ? '64.225.74.24/' : 'localhost';
-        var socketPath = `wss://${domain}:8000/`;
+        var socketPath = "wss://mcwp.vsc.app/:8000/";
 
         const webSocket = new WebSocket(socketPath);
 
@@ -284,7 +284,7 @@ class MouseClassifier extends Component {
                 <div className="mb-2 center">
                     <ProgressBar
                       progress={this.state.resultAccuracy}
-                      size={250}
+                      size={220}
                       strokeWidth={15}
                       circleOneStroke={this.state.colorDefault}
                       circleTwoStroke={this.state.resultColor}
@@ -294,7 +294,7 @@ class MouseClassifier extends Component {
                     <Button disabled={this.state.isTracking}
                         variant="success"
                         size="lg"
-                        style={{ width: '15rem', height:'3.5rem' }}
+                        style={{ width: '13.5rem', height:'3rem' }}
                         onClick={!this.state.isTracking ? this.startTracking : this.stopAll}>
                         {buttonTitle}
                     </Button>
