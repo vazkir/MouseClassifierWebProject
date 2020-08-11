@@ -37,7 +37,7 @@ window.reactRoot = window.reactRoot || document.getElementById('react');
 window.props = window.props || { };
 
 // Check if production for websocket
-const is_production = ('is_production' in window.props) ? !!window.props.has_cookie_notice : false;
+const is_production = ('is_production' in window.props) ? !!window.props.is_production : false;
 
 // To acces the component for inserting new contentState
 // Source 1: https://stackoverflow.com/questions/31612598/call-a-react-component-method-from-outside
