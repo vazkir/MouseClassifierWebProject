@@ -48,7 +48,7 @@ window.props.ref = (element) => {
 }
 
 ReactDOM.render(
-    <App is_production={is_production} />,
+    <App is_production={true} />,
     document.getElementById('react')
 );
 
