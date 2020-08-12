@@ -85,9 +85,9 @@ class MouseClassifier extends Component {
         // Send socket data
         if (msInterval < 2000){
             // Null checking accelormeter
-            const x_acc = 100 * (this.state.accSensor.x != null ? this.state.accSensor.x : 0);
-            const y_acc = 100 * (this.state.accSensor.y != null ? this.state.accSensor.y : 0);
-            const z_acc = 100 * (this.state.accSensor.z != null ? this.state.accSensor.z : 0);
+            const x_acc = (this.state.accSensor.x != null ? this.state.accSensor.x : 0);
+            const y_acc = (this.state.accSensor.y != null ? this.state.accSensor.y : 0);
+            const z_acc = (this.state.accSensor.z != null ? this.state.accSensor.z : 0);
 
             // Null checking gyrescope
             const x_gyr = this.state.gyrSensor.x != null ? this.state.gyrSensor.x : 0;
