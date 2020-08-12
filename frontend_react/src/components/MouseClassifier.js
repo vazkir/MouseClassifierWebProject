@@ -3,7 +3,8 @@ import { Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import {
   Gyroscope,
-  Accelerometer
+  Accelerometer,
+  LinearAccelerationSensor
 } from 'motion-sensors-polyfill/src/motion-sensors.js';
 import ProgressBar from './progress/ProgressBar';
 import { isMobile } from "react-device-detect";
@@ -23,7 +24,7 @@ class MouseClassifier extends Component {
           deviceMotionPermission: false,
           deviceOrientationPermission: false,
           isSendingData: false,
-          accSensor: new Accelerometer(),
+          accSensor: new Accelerometer({frequency: 13}),
           gyrSensor: new Gyroscope({ frequency: 15 }),
           webSocket: {},
           messages: [],
@@ -48,7 +49,7 @@ class MouseClassifier extends Component {
         this.setupWebSocket();
         this.startTracking = this.startTracking.bind(this);
 
-        if (!isMobile){ this.notMobileAlert(); }
+        if (!isMobile && this.props.is_production){ this.notMobileAlert(); }
     }
 
     notMobileAlert = () => {
@@ -89,6 +90,7 @@ class MouseClassifier extends Component {
             newData.hostTime = newHostTime;
             newData.nodeTime = newNodeTime;
 
+            console.log(newData);
             this.sendDataUpstream(newData, false);
         }else{
             // Stop all handlers, trackers etc.
@@ -114,8 +116,8 @@ class MouseClassifier extends Component {
     }
 
     setupWebSocket(){
-        const domain = this.props.is_production ? '64.225.74.24/' : 'localhost';
-        var socketPath = "wss://mcwp.vsc.app/:8000/";
+        const domain = this.props.is_production ? 'mcwp.vsc.app/' : 'localhost';
+        var socketPath = "wss://"+ domain + ":8000/";
 
         const webSocket = new WebSocket(socketPath);
 
@@ -190,7 +192,7 @@ class MouseClassifier extends Component {
 
 
     async startTracking(){
-        if (!isMobile){
+        if (!isMobile && this.props.is_production){
             this.notMobileAlert();
         }else{
             // Clear previous data
@@ -256,12 +258,12 @@ class MouseClassifier extends Component {
 
     readAcc = (e) =>{
         this.setState({...this.state.currentData,
-            x_acc: +(e.target.x).toFixed(2),
-            y_acc: +(e.target.y).toFixed(2),
-            z_acc: +(e.target.z).toFixed(2),
+            x_acc: 100 * (e.target.x).toFixed(2),
+            y_acc: 100 * (e.target.y).toFixed(2),
+            z_acc: 100 * (e.target.z).toFixed(2),
         });
 
-        document.getElementById('statusAcc').innerHTML = `x: ${+(e.target.x).toFixed(2)}, y: ${+(e.target.y).toFixed(2)}, z: ${+(e.target.z).toFixed(2)}`;
+        document.getElementById('statusAcc').innerHTML = `x: ${100 * e.target.x}, y: ${100 * e.target.y}, z: ${100 * e.target.z}`;
     }
 
     stopTrackingSensors = () => {
@@ -281,7 +283,7 @@ class MouseClassifier extends Component {
                 <p id="statusGyr">Gyroscope waiting...</p>
                 <p id="statusAcc">Accelerometer waiting...</p>
                 <p id="intervalSeconds">0ms</p>
-                <div className="mb-2 center">
+                <div className="center">
                     <ProgressBar
                       progress={this.state.resultAccuracy}
                       size={220}
@@ -294,7 +296,7 @@ class MouseClassifier extends Component {
                     <Button disabled={this.state.isTracking}
                         variant="success"
                         size="lg"
-                        style={{ width: '13.5rem', height:'3rem' }}
+                        style={{ width: '14rem', height:'3rem' }}
                         onClick={!this.state.isTracking ? this.startTracking : this.stopAll}>
                         {buttonTitle}
                     </Button>

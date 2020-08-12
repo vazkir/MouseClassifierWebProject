@@ -22,7 +22,7 @@ def mainReactApp(request):
         'component': 'reactComponent',
         'props': {
             'ref': 'reactVS',
-            'is_production': settings.IS_PRODUCTION,
+            'is_production':  1 if settings.IS_PRODUCTION else 0,
             'returnUrl': request.build_absolute_uri(), # The url from which the reques
         },
     }
