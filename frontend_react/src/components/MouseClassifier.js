@@ -81,10 +81,28 @@ class MouseClassifier extends Component {
         });
 
         document.getElementById('intervalSeconds').innerHTML = msInterval + 'ms';
-        console.log(msInterval);
+        // console.log(msInterval);
+        // Send socket data
         if (msInterval < 2000){
-            // send socket data
-            var newData = this.state.currentData;
+            // Null checking accelormeter
+            const x_acc = 100 * (this.state.accSensor.x != null ? this.state.accSensor.x : 0);
+            const y_acc = 100 * (this.state.accSensor.y != null ? this.state.accSensor.y : 0);
+            const z_acc = 100 * (this.state.accSensor.z != null ? this.state.accSensor.z : 0);
+
+            // Null checking gyrescope
+            const x_gyr = this.state.gyrSensor.x != null ? this.state.gyrSensor.x : 0;
+            const y_gyr = this.state.gyrSensor.y != null ? this.state.gyrSensor.y : 0;
+            const z_gyr = this.state.gyrSensor.z != null ? this.state.gyrSensor.z : 0;
+
+            var newData = {
+                x_acc: (x_acc).toFixed(2),
+                y_acc: (y_acc).toFixed(2),
+                z_acc: (z_acc).toFixed(2),
+                x_gyr: (x_gyr).toFixed(2),
+                y_gyr: (y_gyr).toFixed(2),
+                z_gyr: (z_gyr).toFixed(2),
+            }
+
             newData.sr_no = new_sr_no;
             newData.msInterval = msInterval;
             newData.hostTime = newHostTime;
@@ -246,24 +264,11 @@ class MouseClassifier extends Component {
     };
 
     readGyr = (e) =>{
-
-        this.setState({...this.state.currentData,
-            x_gyr: +(e.target.x).toFixed(2),
-            y_gyr: +(e.target.y).toFixed(2),
-            z_gyr: +(e.target.z).toFixed(2),
-        });
-        console.log()
-        document.getElementById('statusGyr').innerHTML = `x: ${+(e.target.x).toFixed(2)}, y: ${+(e.target.y).toFixed(2)}, z: ${+(e.target.z).toFixed(2)}`;
+        document.getElementById('statusGyr').innerHTML = `Gyro -> x: ${+(e.target.x).toFixed(2)}, y: ${+(e.target.y).toFixed(2)}, z: ${+(e.target.z).toFixed(2)}`;
     }
 
     readAcc = (e) =>{
-        this.setState({...this.state.currentData,
-            x_acc: 100 * (e.target.x).toFixed(2),
-            y_acc: 100 * (e.target.y).toFixed(2),
-            z_acc: 100 * (e.target.z).toFixed(2),
-        });
-
-        document.getElementById('statusAcc').innerHTML = `x: ${100 * e.target.x}, y: ${100 * e.target.y}, z: ${100 * e.target.z}`;
+        document.getElementById('statusAcc').innerHTML = `Acc -> x: ${(100 * e.target.x).toFixed(2)}, y: ${(100 * e.target.x).toFixed(2)}, z: ${(100 * e.target.x).toFixed(2)}`;
     }
 
     stopTrackingSensors = () => {
